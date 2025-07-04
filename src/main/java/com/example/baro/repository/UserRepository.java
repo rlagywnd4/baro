@@ -2,6 +2,7 @@ package com.example.baro.repository;
 
 import com.example.baro.domain.User;
 import com.example.baro.dto.request.SignupRequestDto;
+import com.example.baro.enums.ErrorCode;
 import com.example.baro.exception.AuthException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -29,7 +30,7 @@ public class UserRepository {
     }
 
     public UserDetails loadUserByUsername(String username) {
-        checkUserExists(username);
+        checkUserExist(username, USER_NOT_EXISTS);
 
         User user = users.get(username);
         return org.springframework.security.core.userdetails.User.builder()
@@ -39,13 +40,20 @@ public class UserRepository {
                 .build();
     }
 
+    public User findUserByUsername(String username){
+        checkUserExist(username, USER_NOT_EXISTS);
+
+        return users.get(username);
+    }
+
     /**
      * 유저가 있는지 확인(없으면 예외 발생)
      * @param username username
+     * @param errorCode ErrorCode to be thrown when the user is not found
      */
-    public void checkUserExists(String username){
+    public void checkUserExist(String username, ErrorCode errorCode){
         if(!users.containsKey(username)){
-            throw new AuthException(USER_NOT_EXISTS);
+            throw new AuthException(errorCode);
         }
     }
 
