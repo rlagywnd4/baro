@@ -25,7 +25,8 @@ public class SecurityConfig {
 
     public static final String[] AUTH_ALLOWLIST = {
             "/signup",
-            "/login"
+            "/login",
+            "/test/**"
     };
 
     @Bean

@@ -1,20 +1,25 @@
 package com.example.baro.controller;
 
+import com.example.baro.domain.User;
 import com.example.baro.dto.request.LoginRequestDto;
 import com.example.baro.dto.request.SignupRequestDto;
 import com.example.baro.dto.response.LoginResponseDto;
 import com.example.baro.dto.response.UserResponseDto;
+import com.example.baro.repository.UserRepository;
 import com.example.baro.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RequiredArgsConstructor
 @RestController
 public class AuthController {
+    // for test
+    private final UserRepository userRepository;
+
     private final AuthService authService;
 
     //TODO: 디벨롭시 Valid 추가할 것
@@ -30,5 +35,12 @@ public class AuthController {
         String token = authService.login(dto);
         response.setHeader("Authorization", "Bearer " + token);
         return ResponseEntity.ok(new LoginResponseDto(token));
+    }
+
+    // test를 위한 권한 변경 api
+    @PatchMapping("/test/{userId}")
+    public ResponseEntity<User> changePermition(@PathVariable Long userId){
+        User user = userRepository.grantAdminRole(userId);
+        return ResponseEntity.ok(user);
     }
 }

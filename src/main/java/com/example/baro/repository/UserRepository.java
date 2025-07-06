@@ -3,6 +3,8 @@ package com.example.baro.repository;
 import com.example.baro.domain.User;
 import com.example.baro.dto.request.SignupRequestDto;
 import com.example.baro.enums.ErrorCode;
+import com.example.baro.enums.Role;
+import com.example.baro.exception.AdminException;
 import com.example.baro.exception.AuthException;
 import lombok.AllArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -10,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 
 import static com.example.baro.enums.ErrorCode.USER_ALREADY_EXISTS;
 import static com.example.baro.enums.ErrorCode.USER_NOT_EXISTS;
@@ -44,6 +48,19 @@ public class UserRepository {
         checkUserExist(username, USER_NOT_EXISTS);
 
         return users.get(username);
+    }
+
+    public User grantAdminRole(Long userId) {
+        Optional<User> matchedUser = users.values().stream()
+                .filter(user -> Objects.equals(user.getUserId(), userId))
+                .findFirst();
+        if(matchedUser.isEmpty()) {
+            throw new AdminException(USER_NOT_EXISTS);
+        }
+        User user = matchedUser.get().setRole(Role.Admin);
+        users.replace(user.getUsername(), user);
+
+        return user;
     }
 
     /**
