@@ -22,11 +22,15 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final UserRepository userRepository;
+    private final CustomAccessDeniedHandler accessDeniedHandler;
 
     public static final String[] AUTH_ALLOWLIST = {
             "/signup",
             "/login",
-            "/test/**"
+            "/test/**",
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            "/swagger-ui.html"
     };
 
     @Bean
@@ -43,6 +47,9 @@ public class SecurityConfig {
                         .requestMatchers(AUTH_ALLOWLIST).permitAll()
                         .requestMatchers("/admin/**").hasRole("Admin")
                         .anyRequest().authenticated()
+                )
+                .exceptionHandling(exception -> exception
+                        .accessDeniedHandler(accessDeniedHandler)
                 )
                 .addFilterBefore(new JwtFilter(jwtTokenProvider, userRepository), UsernamePasswordAuthenticationFilter.class);
 
