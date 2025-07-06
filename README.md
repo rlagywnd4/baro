@@ -16,7 +16,8 @@
 
 ---
 
-##  **Swagger URL**: `http://54.180.116.44:8080/swagger-ui/index.html#/`
+## **Swagger URL**  
+[http://54.180.116.44:8080/swagger-ui/index.html#/](http://54.180.116.44:8080/swagger-ui/index.html#/)
 
 
 ## 🔗 API 명세
