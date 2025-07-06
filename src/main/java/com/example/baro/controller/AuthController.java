@@ -22,7 +22,6 @@ public class AuthController {
 
     private final AuthService authService;
 
-    //TODO: 디벨롭시 Valid 추가할 것
     @PostMapping("/signup")
     public ResponseEntity<UserResponseDto> signup(
             @RequestBody SignupRequestDto dto
