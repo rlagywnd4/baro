@@ -51,15 +51,18 @@ class JwtTokenProviderTest {
     @DisplayName("만료된 토큰 검증 실패")
     void expiredToken() throws Exception {
         Date now = new Date();
-        String secretKey = "fj!bE7@zRu6pX^cYVt9#Nq!bE7@zRufajoijf";
+
+        Field field = JwtTokenProvider.class.getDeclaredField("secretKey");
+        field.setAccessible(true);
+        String secretKey = (String) field.get(jwtTokenProvider);
+
         String token = Jwts.builder()
                 .subject("hi")
                 .claims(new HashMap<>())
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + 1L))
+                .expiration(new Date(now.getTime() - 1000L)) // 기간을 만료시킴
                 .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
                 .compact();
-        Thread.sleep(2000); // 만료 기다림
 
         assertFalse(jwtTokenProvider.validateToken(token));
     }
