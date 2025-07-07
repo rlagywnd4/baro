@@ -1,11 +1,16 @@
 package com.example.baro.jwt;
 
 import com.example.baro.enums.Role;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -40,6 +45,23 @@ class JwtTokenProviderTest {
         String invalidToken = "not.a.valid.token";
 
         assertFalse(jwtTokenProvider.validateToken(invalidToken));
+    }
+
+    @Test
+    @DisplayName("만료된 토큰 검증 실패")
+    void expiredToken() throws Exception {
+        Date now = new Date();
+        String secretKey = "fj!bE7@zRu6pX^cYVt9#Nq!bE7@zRufajoijf";
+        String token = Jwts.builder()
+                .subject("hi")
+                .claims(new HashMap<>())
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + 1L))
+                .signWith(Keys.hmacShaKeyFor(secretKey.getBytes(StandardCharsets.UTF_8)))
+                .compact();
+        Thread.sleep(2000); // 만료 기다림
+
+        assertFalse(jwtTokenProvider.validateToken(token));
     }
 
     @Test
